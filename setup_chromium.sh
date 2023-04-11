@@ -1,35 +1,5 @@
-#!/bin/bash
-
-# Add debian buster
-cat > /etc/apt/sources.list.d/debian.list <<'EOF'
-deb [arch=amd64 signed-by=/usr/share/keyrings/debian-buster.gpg] http://deb.debian.org/debian buster main
-deb [arch=amd64 signed-by=/usr/share/keyrings/debian-buster-updates.gpg] http://deb.debian.org/debian buster-updates main
-deb [arch=amd64 signed-by=/usr/share/keyrings/debian-security-buster.gpg] http://deb.debian.org/debian-security buster/updates main
-EOF
-
-# Add keys
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys DCC9EFBF77E11517
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 112695A0E562B32A
-
-apt-key export 77E11517 | gpg --dearmour -o /usr/share/keyrings/debian-buster.gpg
-apt-key export 22F3D138 | gpg --dearmour -o /usr/share/keyrings/debian-buster-updates.gpg
-apt-key export E562B32A | gpg --dearmour -o /usr/share/keyrings/debian-security-buster.gpg
-
-# Prefer debian repo for chromium* packages only
-# Note the double-blank lines between entries
-cat > /etc/apt/preferences.d/chromium.pref << 'EOF'
-Package: *
-Pin: release a=eoan
-Pin-Priority: 500
-
-
-Package: *
-Pin: origin "deb.debian.org"
-Pin-Priority: 300
-
-
-Package: chromium*
-Pin: origin "deb.debian.org"
-Pin-Priority: 700
-EOF
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | tee /etc/apt/sources.list.d/google-chrome.list
+apt update -y
+apt install -y gconf-service libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libxss1 fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils
+apt install -y google-chrome-stable
